@@ -225,7 +225,7 @@ function buildWeeklyVol() {
   return Object.keys(weeks).sort().map(w => ({ week: w.slice(5), km: +weeks[w].toFixed(1) }));
 }
 
-const today = new Date("2026-07-23");
+const today = new Date();
 
 function daysTo(dateStr) {
   return Math.max(0, Math.round((new Date(dateStr) - today) / 86400000));
