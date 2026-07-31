@@ -286,7 +286,7 @@ const RAW = [
 ];
 
 const RACES = [
-  {date:"2026-08-02",name:"5km Time Trial",goal:"Sub 20:00",color:"#9F7AEA"},
+  {date:"2026-08-09",name:"5km Time Trial",goal:"Sub 20:00",color:"#9F7AEA"},
   {date:"2026-08-22",name:"Spartan Super",goal:"Sub 1:30 · clean obstacles",color:"#E53E3E"},
   {date:"2026-08-30",name:"Army Run Sim",goal:"Progressive 18-20km",color:"#ED8936"},
   {date:"2026-09-06",name:"HYROX Doubles Sim",goal:"Training race",color:"#ED8936"},
@@ -358,9 +358,12 @@ else if(tsb<-20){tsbLabel="very fatigued";tsbColor="#E53E3E";}
 else if(tsb<-5){tsbLabel="fatigued";tsbColor="#FC8181";}
 
 const ctlUp = latest.ctl > prev7.ctl;
+// Weekly km — use most recent 7 days of available data if today has no data
+const mostRecentDate = new Date(RAW[RAW.length-1].d);
+const refDate = today > mostRecentDate ? mostRecentDate : today;
 const weekKm = RAW.filter(a=>{
-  const diff=(today-new Date(a.d))/86400000;
-  return diff<=7&&(a.type==="Run"||a.type==="Race");
+  const diff=(refDate-new Date(a.d))/86400000;
+  return diff<=7&&diff>=0&&(a.type==="Run"||a.type==="Race");
 }).reduce((s,a)=>s+a.dist,0);
 
 // Stat cards
@@ -470,7 +473,7 @@ new Chart(document.getElementById("volChart"),{
 });
 
 // Dynamics charts
-function dynChart(id, key, color, baseline) {
+function dynChart(id, key, color, baseline, baseId) {
   new Chart(document.getElementById(id),{
     type:"line",
     data:{
@@ -483,18 +486,25 @@ function dynChart(id, key, color, baseline) {
     options:{...chartDefaults,
       scales:{
         x:{ticks:{color:MUTED,font:{size:8}},grid:{color:GRID},border:{color:GRID}},
-        y:{ticks:{color:MUTED,font:{size:8}},grid:{color:GRID},border:{color:GRID},domain:["auto","auto"]}
+        y:{ticks:{color:MUTED,font:{size:8}},grid:{color:GRID},border:{color:GRID}}
       }
     }
   });
   const last = DYNAMICS[DYNAMICS.length-1][key];
-  document.getElementById(id.replace("Chart","")+"base").textContent =
-    `baseline: ${baseline} · latest: ${last}`;
+  document.getElementById(baseId).textContent = `baseline: ${baseline} · latest: ${last}`;
 }
-dynChart("vrChart","vr","#4299E1",8.4);
-dynChart("gctChart","gct","#ED8936",267);
-dynChart("cadChart","cad","#48BB78",168);
-dynChart("strChart","stride","#9F7AEA",1.08);
+// Dynamics charts init on tab click (see showTab)
+
+// Dynamics charts — init lazily on first tab show
+let dynInit = false;
+function initDynamics() {
+  if (dynInit) return;
+  dynInit = true;
+  dynChart("vrChart","vr","#4299E1",8.4,"vr-base");
+  dynChart("gctChart","gct","#ED8936",267,"gct-base");
+  dynChart("cadChart","cad","#48BB78",168,"cad-base");
+  dynChart("strChart","stride","#9F7AEA",1.08,"str-base");
+}
 
 // Tab switching
 function showTab(id, btn) {
@@ -502,6 +512,7 @@ function showTab(id, btn) {
   document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
   document.getElementById("tab-"+id).classList.add("active");
   btn.classList.add("active");
+  if (id === "dynamics") initDynamics();
 }
 </script>
 </body>
