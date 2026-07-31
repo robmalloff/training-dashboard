@@ -178,4 +178,25 @@ if __name__ == "__main__":
     js_array   = format_js(activities)
     last_date  = max((a["d"] for a in activities), default="n/a")
     update_jsx(js_array, len(activities), last_date)
+    update_html(js_array, len(activities), last_date)
     print("Done.")
+
+
+# ── 6. Also update index.html ─────────────────────────────────────────────────
+def update_html(js_array, activity_count, last_date):
+    html_path = Path(__file__).parent / "index.html"
+    if not html_path.exists():
+        return
+    with open(html_path) as f:
+        content = f.read()
+
+    # Replace RAW array in HTML
+    new_raw = f"const RAW = [\n{js_array}\n];"
+    content = re.sub(r"const RAW = \[[\s\S]*?\];", new_raw, content)
+
+    # Update activity count
+    content = re.sub(r'\d+ Garmin activities', f'{activity_count} Garmin activities', content)
+
+    with open(html_path, "w") as f:
+        f.write(content)
+    print(f"Updated index.html: {activity_count} activities through {last_date}")
