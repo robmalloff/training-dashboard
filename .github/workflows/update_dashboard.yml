@@ -2,9 +2,8 @@ name: Update Training Dashboard
 
 on:
   schedule:
-    # Runs at 6am ET daily (10:00 UTC)
-    - cron: '0 10 * * *'
-  workflow_dispatch:  # Allow manual trigger from GitHub UI
+    - cron: '0 10 * * *'  # 6am ET daily
+  workflow_dispatch:
 
 jobs:
   update:
@@ -20,14 +19,28 @@ jobs:
           python-version: '3.12'
 
       - name: Install dependencies
-        run: pip install requests
+        run: pip install garminconnect pydantic requests
 
-      - name: Fetch Strava and update dashboard
+      - name: Restore Garmin tokens
+        uses: actions/cache@v4
+        with:
+          path: .garmin_tokens
+          key: garmin-tokens-${{ runner.os }}
+          restore-keys: garmin-tokens-
+
+      - name: Fetch Garmin and update dashboard
         env:
-          STRAVA_CLIENT_ID:     ${{ secrets.STRAVA_CLIENT_ID }}
-          STRAVA_CLIENT_SECRET: ${{ secrets.STRAVA_CLIENT_SECRET }}
-          STRAVA_REFRESH_TOKEN: ${{ secrets.STRAVA_REFRESH_TOKEN }}
-        run: python fetch_strava.py
+          GARMIN_EMAIL:     ${{ secrets.GARMIN_EMAIL }}
+          GARMIN_PASSWORD:  ${{ secrets.GARMIN_PASSWORD }}
+          GARMIN_TOKEN_DIR: .garmin_tokens
+        run: python fetch_garmin.py
+
+      - name: Save Garmin tokens
+        uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: .garmin_tokens
+          key: garmin-tokens-${{ runner.os }}
 
       - name: Commit and push if changed
         run: |
@@ -35,4 +48,4 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add training_dashboard.jsx
           git diff --staged --quiet || git commit -m "Daily dashboard update $(date +'%Y-%m-%d')"
-          git push
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git main
