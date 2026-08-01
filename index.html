@@ -308,7 +308,7 @@ function buildPMC() {
   const byDate = {};
   RAW.forEach(a => { byDate[a.d] = (byDate[a.d]||0) + (a.re||0); });
   const data = [];
-  let ctl=42, atl=40;
+  let ctl=54, atl=48;
   const kCTL=2/43, kATL=2/8;
   const start = new Date("2026-01-01");
   const end = new Date();

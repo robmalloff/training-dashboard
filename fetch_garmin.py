@@ -170,17 +170,6 @@ def update_jsx(js_array, activity_count, last_date):
     print(f"Updated {JSX_PATH.name}: {activity_count} activities through {last_date}")
 
 # ── MAIN ──────────────────────────────────────────────────────────────────────
-if __name__ == "__main__":
-    client     = get_client()
-    raw_data   = fetch_activities(client)
-    activities = [to_raw(a) for a in raw_data if a.get("startTimeLocal","")[:4] == "2026"]
-    activities = [a for a in activities if a["d"]]
-    js_array   = format_js(activities)
-    last_date  = max((a["d"] for a in activities), default="n/a")
-    update_jsx(js_array, len(activities), last_date)
-    update_html(js_array, len(activities), last_date)
-    print("Done.")
-
 
 # ── 6. Also update index.html ─────────────────────────────────────────────────
 def update_html(js_array, activity_count, last_date):
@@ -200,3 +189,14 @@ def update_html(js_array, activity_count, last_date):
     with open(html_path, "w") as f:
         f.write(content)
     print(f"Updated index.html: {activity_count} activities through {last_date}")
+if __name__ == "__main__":
+    client     = get_client()
+    raw_data   = fetch_activities(client)
+    activities = [to_raw(a) for a in raw_data if a.get("startTimeLocal","")[:4] == "2026"]
+    activities = [a for a in activities if a["d"]]
+    js_array   = format_js(activities)
+    last_date  = max((a["d"] for a in activities), default="n/a")
+    update_jsx(js_array, len(activities), last_date)
+    update_html(js_array, len(activities), last_date)
+    print("Done.")
+
