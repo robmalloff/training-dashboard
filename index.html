@@ -304,11 +304,57 @@ const DYNAMICS = [
 ];
 
 // ── PMC ────────────────────────────────────────────────────────────────────────
+// ── TSS CALCULATION ────────────────────────────────────────────────────────────
+// TRIMP-based TSS estimate using duration, activity type, and intensity
+// Max HR: 191 bpm, Lactate threshold HR: 168 bpm
+// For activities without HR data, use duration + type to estimate intensity factor
+const MAX_HR = 191;
+const LTHR = 168;  // Lactate threshold HR
+
+function estimateTSS(activity) {
+  const mins = activity.mt / 60;
+  if (mins < 1) return 0;
+
+  // Intensity factor by activity type
+  // IF = avg HR / LTHR (estimated)
+  let IF;
+  switch(activity.type) {
+    case "Race":     IF = 1.05; break;  // Race effort ~105% of LT
+    case "Run":
+      // Estimate IF from distance/time (pace)
+      if (activity.dist > 0) {
+        const paceMinPerKm = mins / activity.dist;
+        // Sub 4:00/km = tempo+, 4:00-4:30 = threshold, 4:30-5:30 = moderate, 5:30+ = easy
+        if (paceMinPerKm < 4.0)       IF = 1.0;
+        else if (paceMinPerKm < 4.3)  IF = 0.93;
+        else if (paceMinPerKm < 4.8)  IF = 0.85;
+        else if (paceMinPerKm < 5.5)  IF = 0.78;
+        else                           IF = 0.72;
+      } else {
+        IF = 0.75;
+      }
+      break;
+    case "HIIT":     IF = 0.85; break;
+    case "Strength": IF = 0.65; break;
+    default:         IF = 0.70; break;
+  }
+
+  // TSS = (duration_sec * NP * IF) / (LTHR * 3600) * 100
+  // Simplified: TSS = (mins * IF^2) * 100/60 * scaling
+  // Standard formula: TSS = (t_sec * IF^2) / 3600 * 100
+  const tss = (activity.mt * IF * IF) / 3600 * 100;
+  return Math.round(tss);
+}
+
 function buildPMC() {
   const byDate = {};
-  RAW.forEach(a => { byDate[a.d] = (byDate[a.d]||0) + (a.re||0); });
+  RAW.forEach(a => {
+    const tss = estimateTSS(a);
+    byDate[a.d] = (byDate[a.d]||0) + tss;
+  });
+
   const data = [];
-  let ctl=54, atl=48;
+  let ctl=52, atl=35;
   const kCTL=2/43, kATL=2/8;
   const start = new Date("2026-01-01");
   const end = new Date();

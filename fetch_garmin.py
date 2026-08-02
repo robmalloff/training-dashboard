@@ -104,14 +104,31 @@ def to_raw(a):
     # Duration in seconds
     mt = int(a.get("movingDuration") or a.get("duration") or 0)
 
-    # Relative effort / TSS estimate
-    # Use aerobicTrainingEffect * 20 as a TSS proxy if no direct TSS
-    tss = a.get("trainingStressScore") or 0
-    if not tss:
-        aerobic_te = a.get("aerobicTrainingEffect") or 0
-        anaerobic_te = a.get("anaerobicTrainingEffect") or 0
-        te = max(aerobic_te, anaerobic_te)
-        tss = round(mt / 60 * te * 3) if te and mt else round(mt / 60 * 0.5)
+    # TSS calculation using TRIMP method
+    # Max HR: 191, Lactate threshold HR: 168
+    # Estimate intensity factor from pace and activity type
+    sport_key = a.get("activityType", {}).get("typeKey", "other").lower()
+    mins = mt / 60 if mt else 0
+    dist_km = dist  # already in km
+
+    if activity_type == "Race":
+        IF = 1.05
+    elif activity_type == "Run" and dist_km > 0 and mins > 0:
+        pace = mins / dist_km  # min/km
+        if pace < 4.0:    IF = 1.0
+        elif pace < 4.3:  IF = 0.93
+        elif pace < 4.8:  IF = 0.85
+        elif pace < 5.5:  IF = 0.78
+        else:             IF = 0.72
+    elif activity_type == "HIIT":
+        IF = 0.85
+    elif activity_type == "Strength":
+        IF = 0.65
+    else:
+        IF = 0.72
+
+    # TSS = (duration_secs * IF^2) / 3600 * 100
+    tss = round((mt * IF * IF) / 3600 * 100) if mt else 0
 
     name = a.get("activityName") or ""
 
