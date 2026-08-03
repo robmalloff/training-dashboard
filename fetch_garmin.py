@@ -192,20 +192,40 @@ def update_jsx(js_array, activity_count, last_date):
 def update_html(js_array, activity_count, last_date):
     html_path = Path(__file__).parent / "index.html"
     if not html_path.exists():
+        print("index.html not found — skipping HTML update")
         return
     with open(html_path) as f:
         content = f.read()
 
-    # Replace RAW array in HTML
+    # Replace RAW array — use a more robust pattern
     new_raw = f"const RAW = [\n{js_array}\n];"
-    content = re.sub(r"const RAW = \[[\s\S]*?\];", new_raw, content)
+    # Try exact match first
+    if "const RAW = [" in content:
+        # Find start and end of RAW array
+        start_idx = content.find("const RAW = [")
+        # Find the matching closing ]; by tracking bracket depth
+        i = start_idx + len("const RAW = [")
+        depth = 1
+        while i < len(content) and depth > 0:
+            if content[i] == '[': depth += 1
+            elif content[i] == ']': depth -= 1
+            i += 1
+        # i now points just after the closing ]
+        # skip the semicolon
+        if i < len(content) and content[i] == ';':
+            i += 1
+        content = content[:start_idx] + new_raw + content[i:]
+        print(f"RAW array replaced: {activity_count} activities")
+    else:
+        print("WARNING: Could not find RAW array in index.html")
+        return
 
     # Update activity count
     content = re.sub(r'\d+ Garmin activities', f'{activity_count} Garmin activities', content)
 
     with open(html_path, "w") as f:
         f.write(content)
-    print(f"Updated index.html: {activity_count} activities through {last_date}")
+    print(f"Updated index.html through {last_date}")
 if __name__ == "__main__":
     client     = get_client()
     raw_data   = fetch_activities(client)
