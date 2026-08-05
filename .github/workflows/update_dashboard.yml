@@ -46,6 +46,6 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add training_dashboard.jsx
+          git add training_dashboard.jsx index.html
           git diff --staged --quiet || git commit -m "Daily dashboard update $(date +'%Y-%m-%d')"
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git main
