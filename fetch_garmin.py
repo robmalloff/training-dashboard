@@ -128,7 +128,8 @@ def to_raw(a):
         IF = 0.72
 
     # TSS = (duration_secs * IF^2) / 3600 * 100
-    tss = round((mt * IF * IF) / 3600 * 100) if mt else 0
+    CALIBRATION = 0.97
+    tss = round((mt * IF * IF) / 3600 * 100 * CALIBRATION) if mt else 0
 
     name = a.get("activityName") or ""
 
