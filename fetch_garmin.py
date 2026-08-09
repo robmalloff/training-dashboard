@@ -107,7 +107,7 @@ def to_raw(a):
     # TSS calculation using TRIMP method
     # Max HR: 191, Lactate threshold HR: 168
     # Estimate intensity factor from pace and activity type
-    sport_key = a.get("activityType", {}).get("typeKey", "other").lower()
+    activity_type = classify(a)
     mins = mt / 60 if mt else 0
     dist_km = dist  # already in km
 
