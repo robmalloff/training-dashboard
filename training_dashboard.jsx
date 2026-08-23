@@ -189,6 +189,7 @@ const RAW = [
   {d:"2026-08-18",dist:8.39,mt:2567,type:"Race",re:76,name:"Ottawa - W14 TUE — Threshold Touch 2x2k"},
   {d:"2026-08-19",dist:0.0,mt:2351,type:"Strength",re:27,name:"Strength"},
   {d:"2026-08-20",dist:5.05,mt:1609,type:"Race",re:48,name:"Ottawa Running"},
+  {d:"2026-08-22",dist:10.82,mt:5454,type:"Run",re:76,name:"Greater Madawaska Running"},
 ];
 
 const RACES = [
@@ -216,7 +217,7 @@ function buildPMC() {
   let ctl = 42, atl = 40;
   const kCTL = 2 / 43, kATL = 2 / 8;
   const start = new Date("2026-01-01");
-  const end = new Date("2026-08-22");
+  const end = new Date("2026-08-23");
   for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
     const ds = d.toISOString().split("T")[0];
     const dailyTSS = byDate[ds] || 0;
