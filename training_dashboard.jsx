@@ -194,6 +194,7 @@ const RAW = [
   {d:"2026-08-27",dist:8.16,mt:2562,type:"Race",re:76,name:"Ottawa Running"},
   {d:"2026-08-28",dist:0.0,mt:2616,type:"Strength",re:30,name:"Strength"},
   {d:"2026-08-30",dist:20.54,mt:6299,type:"Race",re:187,name:"Ottawa - W15 SAT — Army Run Simulation"},
+  {d:"2026-09-01",dist:0.0,mt:2804,type:"Strength",re:32,name:"Strength"},
 ];
 
 const RACES = [
@@ -221,7 +222,7 @@ function buildPMC() {
   let ctl = 42, atl = 40;
   const kCTL = 2 / 43, kATL = 2 / 8;
   const start = new Date("2026-01-01");
-  const end = new Date("2026-08-31");
+  const end = new Date("2026-09-01");
   for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
     const ds = d.toISOString().split("T")[0];
     const dailyTSS = byDate[ds] || 0;
@@ -333,7 +334,7 @@ export default function Dashboard() {
           </div>
           <div style={{ textAlign: "right" }}>
             <div style={{ fontSize: 10, color: C.muted }}>Season data</div>
-            <div style={{ fontSize: 12, color: C.blue }}>Jan – Aug 2026</div>
+            <div style={{ fontSize: 12, color: C.blue }}>Jan – Sep 2026</div>
           </div>
         </div>
 
