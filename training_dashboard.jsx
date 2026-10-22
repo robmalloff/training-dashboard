@@ -227,6 +227,7 @@ const RAW = [
   {d:"2026-10-17",dist:20.34,mt:12630,type:"Run",re:176,name:"Blue Mountains Trail Running"},
   {d:"2026-10-20",dist:16.0,mt:1992,type:"HIIT",re:39,name:"Indoor Cycling"},
   {d:"2026-10-21",dist:0.0,mt:2961,type:"Strength",re:34,name:"Strength"},
+  {d:"2026-10-22",dist:9.08,mt:2847,type:"Race",re:85,name:"Ottawa Running"},
 ];
 
 const RACES = [
@@ -254,7 +255,7 @@ function buildPMC() {
   let ctl = 42, atl = 40;
   const kCTL = 2 / 43, kATL = 2 / 8;
   const start = new Date("2026-01-01");
-  const end = new Date("2026-10-21");
+  const end = new Date("2026-10-22");
   for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
     const ds = d.toISOString().split("T")[0];
     const dailyTSS = byDate[ds] || 0;
