@@ -255,7 +255,7 @@ function buildPMC() {
   let ctl = 42, atl = 40;
   const kCTL = 2 / 43, kATL = 2 / 8;
   const start = new Date("2026-01-01");
-  const end = new Date("2026-10-31");
+  const end = new Date("2026-11-01");
   for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
     const ds = d.toISOString().split("T")[0];
     const dailyTSS = byDate[ds] || 0;
@@ -367,7 +367,7 @@ export default function Dashboard() {
           </div>
           <div style={{ textAlign: "right" }}>
             <div style={{ fontSize: 10, color: C.muted }}>Season data</div>
-            <div style={{ fontSize: 12, color: C.blue }}>Jan – Oct 2026</div>
+            <div style={{ fontSize: 12, color: C.blue }}>Jan – Nov 2026</div>
           </div>
         </div>
 
