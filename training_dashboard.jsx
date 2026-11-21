@@ -245,6 +245,7 @@ const RAW = [
   {d:"2026-11-18",dist:8.29,mt:2677,type:"Run",re:44,name:"W4 Wed Intervals - Pyramid Inter"},
   {d:"2026-11-19",dist:0.0,mt:3186,type:"HIIT",re:62,name:"Ice Hockey"},
   {d:"2026-11-19",dist:9.42,mt:3118,type:"Race",re:93,name:"Ottawa - W4 Thu Easy Run #2 - 9km Easy Ru"},
+  {d:"2026-11-21",dist:10.07,mt:3364,type:"Race",re:100,name:"Ottawa - W4 Sat Long Run - 10km Long Run"},
 ];
 
 const RACES = [
@@ -272,7 +273,7 @@ function buildPMC() {
   let ctl = 42, atl = 40;
   const kCTL = 2 / 43, kATL = 2 / 8;
   const start = new Date("2026-01-01");
-  const end = new Date("2026-11-20");
+  const end = new Date("2026-11-21");
   for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
     const ds = d.toISOString().split("T")[0];
     const dailyTSS = byDate[ds] || 0;
